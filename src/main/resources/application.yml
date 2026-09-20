@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: whatsapp-business-platform
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/whatsapp_business
+    username: platform
+    password: platform_password
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false

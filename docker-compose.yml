@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: whatsapp-business-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: whatsapp_business
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD: platform_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
