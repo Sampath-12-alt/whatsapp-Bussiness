@@ -1,0 +1,8 @@
+CREATE TABLE inventory (
+    id BIGSERIAL PRIMARY KEY,
+    product_id BIGINT NOT NULL UNIQUE,
+    quantity NUMERIC(12,2) NOT NULL DEFAULT 0,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);

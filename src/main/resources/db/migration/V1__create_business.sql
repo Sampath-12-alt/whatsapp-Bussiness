@@ -1,0 +1,9 @@
+CREATE TABLE businesses (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    whatsapp_number VARCHAR(20),
+    address TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);  

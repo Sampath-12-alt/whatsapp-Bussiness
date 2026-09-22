@@ -1,0 +1,10 @@
+CREATE TABLE customers (
+    id BIGSERIAL PRIMARY KEY,
+    business_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (business_id) REFERENCES businesses(id)
+);
