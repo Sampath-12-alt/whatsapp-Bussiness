@@ -1,31 +1,42 @@
 
-// Contains Product Management rules and connects the HTTP-facing controller to the database repository.
+// This service handles product operations and connects the controller to the repositories.
+// It also creates the initial inventory record when a new product is saved.
 package com.platform.service;
 
 import com.platform.entity.Product;
+import com.platform.entity.Inventory;
+import com.platform.repository.InventoryRepository;
 import com.platform.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 // @Service marks this class as application logic managed by Spring.
+// ProductController calls this service to create, read, update, and delete products.
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final InventoryRepository inventoryRepository;
 
     /**
-     * Receives the repository through constructor-based dependency injection.
-     * Spring supplies the repository, and the final field keeps that dependency fixed.
+     * Receives both repositories through constructor-based dependency injection.
+     * Spring supplies the database operations needed to create a product and its inventory.
      *
      * @param productRepository database operations for products
+     * @param inventoryRepository database operations for inventory records
      */
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(
+            ProductRepository productRepository,
+            InventoryRepository inventoryRepository) {
         this.productRepository = productRepository;
+        this.inventoryRepository = inventoryRepository;
     }
 
     /**
@@ -35,6 +46,8 @@ public class ProductService {
      * @param product product details received from the controller
      * @return the saved product, including its generated database ID
      */
+    // Keep both database writes in one transaction so they succeed or roll back together.
+    @Transactional
     public Product createProduct(Long businessId, Product product) {
         // Ignore any client-supplied ID so the database can generate a new one.
         product.setId(null);
@@ -45,7 +58,16 @@ public class ProductService {
         product.setCreatedAt(now);
         product.setUpdatedAt(now);
 
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+
+        // Use the generated product ID and the same timestamp for its initial zero-stock record.
+        Inventory inventory = new Inventory();
+        inventory.setProductId(savedProduct.getId());
+        inventory.setQuantity(BigDecimal.ZERO);
+        inventory.setUpdatedAt(now);
+        inventoryRepository.save(inventory);
+
+        return savedProduct;
     }
 
     /**

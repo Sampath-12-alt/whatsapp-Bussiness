@@ -35,7 +35,9 @@ public class SecurityConfig {
                 // These development product URLs are public; permitAll does not authenticate callers.
                 .requestMatchers(
                     "/api/businesses/*/products",
-                    "/api/businesses/*/products/*"
+                    "/api/businesses/*/products/*",
+                    "/api/businesses/*/products/*/inventory",
+                    "/api/businesses/*/products/*/inventory/*"
                 ).permitAll()
                 // Other requests still require authentication under the configured Spring Security setup.
                 .anyRequest().authenticated()
