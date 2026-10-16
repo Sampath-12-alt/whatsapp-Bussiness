@@ -37,7 +37,9 @@ public class SecurityConfig {
                     "/api/businesses/*/products",
                     "/api/businesses/*/products/*",
                     "/api/businesses/*/products/*/inventory",
-                    "/api/businesses/*/products/*/inventory/*"
+                    "/api/businesses/*/products/*/inventory/*",
+                    "/api/businesses/*/customers",
+                    "/api/businesses/*/customers/*"
                 ).permitAll()
                 // Other requests still require authentication under the configured Spring Security setup.
                 .anyRequest().authenticated()

@@ -25,6 +25,10 @@ public class Inventory {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal quantity = BigDecimal.ZERO;
 
+    // New inventory records start with the database's default threshold of 5.
+    @Column(name = "low_stock_threshold", nullable = false, precision = 12, scale = 2)
+    private BigDecimal lowStockThreshold = BigDecimal.valueOf(5);
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -44,6 +48,15 @@ public class Inventory {
         return quantity;
     }
 
+    public BigDecimal getLowStockThreshold() {
+        return lowStockThreshold;
+    }
+
+    // This value is calculated from the current quantity and threshold, not stored separately.
+    public boolean isLowStock() {
+        return quantity.compareTo(lowStockThreshold) <= 0;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
@@ -58,6 +71,10 @@ public class Inventory {
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
+    }
+
+    public void setLowStockThreshold(BigDecimal lowStockThreshold) {
+        this.lowStockThreshold = lowStockThreshold;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {

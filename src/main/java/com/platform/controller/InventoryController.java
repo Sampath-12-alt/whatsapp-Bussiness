@@ -57,7 +57,11 @@ public class InventoryController {
             @PathVariable Long productId,
             @Valid @RequestBody QuantityRequest request) {
         return inventoryService.updateStock(
-                businessId, productId, request.getQuantity());
+                businessId,
+                productId,
+                request.getQuantity(),
+                request.getLowStockThreshold()
+            );
     }
 
     /**
@@ -85,12 +89,23 @@ public class InventoryController {
         @DecimalMin(value = "0.0", message = "Quantity cannot be negative")
         private BigDecimal quantity;
 
+        @DecimalMin(value = "0.0", message = "Low-stock threshold cannot be negative")
+        private BigDecimal lowStockThreshold;
+
         public BigDecimal getQuantity() {
             return quantity;
         }
 
         public void setQuantity(BigDecimal quantity) {
             this.quantity = quantity;
+        }
+
+        public BigDecimal getLowStockThreshold() {
+            return lowStockThreshold;
+        }
+
+        public void setLowStockThreshold(BigDecimal lowStockThreshold) {
+            this.lowStockThreshold = lowStockThreshold;
         }
     }
 }

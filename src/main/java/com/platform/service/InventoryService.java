@@ -93,17 +93,44 @@ public class InventoryService {
             Long businessId,
             Long productId,
             BigDecimal quantity) {
+        return updateStock(businessId, productId, quantity, null);
+    }
 
+    /**
+     * Sets the product quantity and, when supplied, its low-stock threshold.
+     *
+     * @param businessId ID of the business that must own the product
+     * @param productId ID of the product whose inventory will change
+     * @param quantity new non-negative stock amount
+     * @param lowStockThreshold optional new non-negative threshold; null keeps the current threshold
+     * @return the saved inventory record with its quantity and threshold
+     */
+    @Transactional
+    public Inventory updateStock(
+            Long businessId,
+            Long productId,
+            BigDecimal quantity,
+            BigDecimal lowStockThreshold) {
         // Reject negative stock before loading or changing the inventory record.
         if (quantity == null || quantity.compareTo(BigDecimal.ZERO) < 0) {
             throw new ResponseStatusException(
                     BAD_REQUEST, "Quantity cannot be negative");
         }
 
+        // A threshold can be omitted, but it must not be negative when supplied.
+        if (lowStockThreshold != null
+                && lowStockThreshold.compareTo(BigDecimal.ZERO) < 0) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST, "Low-stock threshold cannot be negative");
+        }
+
         Inventory inventory = getOrCreateInventory(businessId, productId);
 
         // Save the supplied quantity and refresh the last-updated time.
         inventory.setQuantity(quantity);
+        if (lowStockThreshold != null) {
+            inventory.setLowStockThreshold(lowStockThreshold);
+        }
         inventory.setUpdatedAt(LocalDateTime.now());
 
         return inventoryRepository.save(inventory);
